@@ -1,3 +1,5 @@
+// guiaMestre.js
+
 // EnhancedHelper.js
 class EnhancedHelper {
     constructor(steps = [], options = {}) {
@@ -10,6 +12,8 @@ class EnhancedHelper {
          *   - imagem: string (URL da imagem opcional a ser exibida no tooltip)
          *   - imagemWidth: string (largura da imagem, ex: '200px')
          *   - imagemHeight: string (altura da imagem, ex: 'auto')
+         *   - imagemOrder: 'before' | 'after' (ordem da imagem em relação ao texto)
+         *   - imagemCentered: boolean (se a imagem deve ser centralizada)
          *
          * options: Objeto para configurar o comportamento e estilo do tour.
          *   - overlayColor: string (cor do overlay, em rgba ou hex)
@@ -37,6 +41,9 @@ class EnhancedHelper {
                 boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
                 fontFamily: 'Arial, sans-serif',
                 fontSize: '14px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start', // Alinhamento padrão
                 ...options.textBoxStyles // Permite sobrescrever estilos
             },
             highlightTransparent: options.highlightTransparent || false,
@@ -184,6 +191,10 @@ class EnhancedHelper {
         // Remove estilos de tamanho da imagem
         this.imageContent.style.width = '100%';
         this.imageContent.style.height = 'auto';
+
+        // Reseta a direção e alinhamento do textBox
+        this.textBox.style.flexDirection = 'column';
+        this.textBox.style.alignItems = 'flex-start';
     }
 
     /**
@@ -205,87 +216,95 @@ class EnhancedHelper {
      */
     highlightCurrentStep() {
         const step = this.steps[this.currentStepIndex];
-        // Seleciona o elemento pelo atributo helper
         const selector = `[helper="${step.helper}"]`;
         const element = document.querySelector(selector);
 
-        if (!element) { // Se o elemento não for encontrado
+        if (!element) {
             console.error(`Elemento não encontrado com helper="${step.helper}"`);
-            // Pula para o próximo passo
             this.next();
             return;
         }
 
-        // Scroll automático para o elemento
         element.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
 
-        // Pega o tamanho do elemento após o scroll
-        setTimeout(() => { // Aguarda o scroll para obter a posição correta
-            const rect = element.getBoundingClientRect(); // Obtém as coordenadas do elemento
+        setTimeout(() => {
+            const rect = element.getBoundingClientRect();
 
-            // Ajusta a highlightBox para envolver o elemento destacado
             this.highlightBox.style.top = `${rect.top}px`;
             this.highlightBox.style.left = `${rect.left}px`;
             this.highlightBox.style.width = `${rect.width}px`;
             this.highlightBox.style.height = `${rect.height}px`;
 
-            // Define o texto do passo atual
             this.textContent.innerText = step.text || '';
 
-            // Verifica se há uma imagem para este passo
-            if (step.imagem) {
-                this.imageContent.src = step.imagem; // Define a fonte da imagem
-                this.imageContent.style.display = 'block'; // Exibe a imagem
+            // Resetando o conteúdo da textBox
+            this.textBox.innerHTML = '';
+            this.textBox.appendChild(this.textContent);
+            this.textBox.appendChild(this.imageContent);
+            this.textBox.appendChild(this.buttonsContainer);
 
-                // Aplica larguras e alturas personalizadas se definidas
-                if (step.imagemWidth) {
-                    this.imageContent.style.width = step.imagemWidth;
-                } else {
-                    this.imageContent.style.width = '100%'; // Valor padrão
+            // Configurando a ordem e alinhamento da imagem e do texto
+            if (step.imagem) {
+                this.imageContent.style.display = 'block';
+                this.imageContent.style.width = step.imagemWidth || '100%';
+                this.imageContent.style.height = step.imagemHeight || 'auto';
+
+                // Configura a ordem da imagem
+                if (step.imagemOrder === 'before') {
+                    this.textBox.insertBefore(this.imageContent, this.textContent);
+                } else if (step.imagemOrder === 'after') {
+                    this.textBox.insertBefore(this.imageContent, this.buttonsContainer);
                 }
 
-                if (step.imagemHeight) {
-                    this.imageContent.style.height = step.imagemHeight;
+                // Configura o alinhamento da imagem
+                if (step.imagemCentered) {
+                    this.textBox.style.alignItems = 'center'; // Centraliza os itens
+                    this.imageContent.style.margin = '0 auto 10px auto'; // Centraliza a imagem
+                    this.textContent.style.textAlign = 'center'; // Centraliza o texto
                 } else {
-                    this.imageContent.style.height = 'auto'; // Valor padrão
+                    this.textBox.style.alignItems = 'flex-start'; // Alinha à esquerda
+                    this.imageContent.style.margin = '0 0 10px 0'; // Margem padrão
+                    this.textContent.style.textAlign = 'left'; // Alinha o texto à esquerda
+                }
+
+                const imageLoadHandler = () => {
+                    this.positionTextBox(rect, step.position || 'right');
+                    this.imageContent.removeEventListener('load', imageLoadHandler);
+                };
+
+                this.imageContent.addEventListener('load', imageLoadHandler);
+                this.imageContent.src = step.imagem;
+
+                // Se a imagem já estiver carregada (cache), chama imediatamente
+                if (this.imageContent.complete) {
+                    imageLoadHandler();
                 }
             } else {
                 this.imageContent.src = '';
-                this.imageContent.style.display = 'none'; // Esconde a imagem se não houver
+                this.imageContent.style.display = 'none';
+                this.positionTextBox(rect, step.position || 'right');
             }
 
-            // Ajusta a posição do tooltip com base na posição definida no passo
-            this.positionTextBox(rect, step.position || 'right');
-
-            // Controla a visibilidade do botão "Anterior"
             this.prevBtn.style.display = this.currentStepIndex === 0 ? 'none' : 'inline-block';
-
-            // Altera o texto do botão "Próximo" para "Concluir" no último passo
             this.nextBtn.innerText = (this.currentStepIndex === this.steps.length - 1) ? 'Concluir' : 'Próximo';
 
-            // Gerencia o destaque do elemento
             if (this.options.highlightTransparent) {
-                // Remove a classe 'dimmed' do elemento atual para destacá-lo
                 element.classList.remove('dimmed');
-                // Remove o elemento da lista de elementos escurecidos
                 this.dimmedElements.delete(element);
 
-                // Armazena o z-index original do elemento, se ainda não armazenado
                 if (!this.originalZIndices.has(element)) {
                     const originalZ = window.getComputedStyle(element).zIndex;
                     this.originalZIndices.set(element, originalZ === 'auto' ? '' : originalZ);
                 }
 
-                // Define um z-index alto para o elemento destacado
-                element.style.zIndex = '10000'; // Superior ao highlightBox
+                element.style.zIndex = '10000';
 
-                // Assegura que o elemento destacado tenha position diferente de 'static' para que o z-index funcione
                 const computedPosition = window.getComputedStyle(element).position;
                 if (computedPosition === 'static') {
                     element.style.position = 'relative';
                 }
             }
-        }, 500); // Aguarda meio segundo para garantir que o scroll foi concluído
+        }, 500);
     }
 
     /**
