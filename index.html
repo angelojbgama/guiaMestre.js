@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Exemplo GuiaMestre</title>
+  <style>
+    /* Zera as margens do body para ocupar a tela inteira */
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+
+    /* Container flex para centralizar o conteúdo */
+    .container {
+      display: flex;
+      flex-direction: column; /* Empilha os elementos verticalmente */
+      justify-content: center; /* Centraliza verticalmente */
+      align-items: center; /* Centraliza horizontalmente */
+      min-height: 100vh; /* Ocupa a tela inteira */
+      background: #f0f0f0; /* Cor de fundo para exemplo */
+    }
+
+    /* Estilo para as caixas destacadas */
+    .box {
+      width: 100px;
+      height: 100px;
+      margin: 20px;
+      background-color: lightblue;
+      display: inline-block;
+    }
+
+    /* Estilo para grupos de formulário */
+    .form-group {
+      margin: 1rem 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    /* Estilo para labels */
+    label {
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    /* Estilo para inputs */
+    input {
+      padding: 5px;
+      width: 200px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    /* Estilo para botões */
+    button {
+      padding: 10px 20px;
+      margin-top: 20px;
+      border: none;
+      border-radius: 4px;
+      background-color: #007BFF;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    /* Estilo para botões ao passar o mouse */
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    /* Estilos para o elemento dimmed (escurecido) */
+    .dimmed {
+      opacity: 0.3;
+      transition: opacity 0.3s;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Elementos que serão destacados no tour, identificados pelo atributo helper -->
+    <div class="box" helper="bloco1"></div>
+    <div class="box" helper="bloco2"></div>
+    <div class="form-group" helper="nome">
+      <label for="nome">Nome</label>
+      <input type="text" id="nome" />
+    </div>
+    <div class="form-group" helper="sobrenome">
+      <label for="sobrenome">Sobrenome</label>
+      <input type="text" id="sobrenome" />
+    </div>
+
+    <!-- Botão para iniciar o tour -->
+    <button id="startHelper">AJUDA</button>
+  </div>
+
+  <!-- Inclua os scripts JavaScript necessários -->
+  <script src="guiaMestre.js"></script> <!-- Presumivelmente, onde a classe EnhancedHelper está definida -->
+  <script src="index_helper.js"></script> <!-- Script que inicializa e configura o tour -->
+</body>
+</html>
