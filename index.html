@@ -1,105 +1,264 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <title>Exemplo GuiaMestre</title>
+  <meta charset="UTF-8">
+  <title>Exemplo Completo com Campos Complexos</title>
   <style>
-    /* Zera as margens do body para ocupar a tela inteira */
+    /* Estilos Gerais */
     body, html {
       margin: 0;
       padding: 0;
-      height: 100%;
+      font-family: Arial, sans-serif;
+      background: #f8f8f8;
     }
-
-    /* Container flex para centralizar o conteúdo */
     .container {
-      display: flex;
-      flex-direction: column; /* Empilha os elementos verticalmente */
-      justify-content: center; /* Centraliza verticalmente */
-      align-items: center; /* Centraliza horizontalmente */
-      min-height: 100vh; /* Ocupa a tela inteira */
-      background: #f0f0f0; /* Cor de fundo para exemplo */
+      width: 90%;
+      max-width: 1200px;
+      margin: 30px auto;
+      background: #fff;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
-
-    /* Estilo para as caixas destacadas */
-    .box {
-      width: 100px;
-      height: 100px;
-      margin: 20px;
-      background-color: lightblue;
-      display: inline-block;
+    h1, h2, h3 {
+      margin-bottom: 15px;
     }
-
-    /* Estilo para grupos de formulário */
+    fieldset {
+      border: 1px solid #ccc;
+      margin-bottom: 20px;
+      padding: 15px;
+    }
+    fieldset legend {
+      font-weight: bold;
+      padding: 0 10px;
+    }
     .form-group {
-      margin: 1rem 0;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
+      margin-bottom: 15px;
     }
-
-    /* Estilo para labels */
-    label {
+    .form-group label {
+      display: block;
       margin-bottom: 5px;
       font-weight: bold;
     }
-
-    /* Estilo para inputs */
-    input {
-      padding: 5px;
-      width: 200px;
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 8px;
       border: 1px solid #ccc;
       border-radius: 4px;
     }
-
-    /* Estilo para botões */
-    button {
-      padding: 10px 20px;
-      margin-top: 20px;
+    .inline-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .inline-group .form-group {
+      flex: 1;
+      min-width: 200px;
+    }
+    /* Estilo customizado para upload de arquivo */
+    .file-input-container {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+    }
+    .file-input-container button {
+      background: #007BFF;
+      color: #fff;
       border: none;
       border-radius: 4px;
-      background-color: #007BFF;
-      color: white;
+      padding: 10px 15px;
       cursor: pointer;
-      font-size: 16px;
     }
-
-    /* Estilo para botões ao passar o mouse */
+    .file-input-container input[type="file"] {
+      position: absolute;
+      top: 0;
+      right: 0;
+      min-width: 100%;
+      min-height: 100%;
+      font-size: 100px;
+      text-align: right;
+      opacity: 0;
+      cursor: pointer;
+    }
+    /* Botões */
+    button {
+      padding: 10px 15px;
+      background: #007BFF;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
     button:hover {
-      background-color: #0056b3;
+      background: #0056b3;
     }
-
-    /* Estilos para o elemento dimmed (escurecido) */
-    .dimmed {
+    /* Efeito "dim" para elementos destacados durante o tour */
+    [data-dimmed] {
       opacity: 0.3;
       transition: opacity 0.3s;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Elementos que serão destacados no tour, identificados pelo atributo helper -->
-    <div class="box" helper="bloco1"></div>
-    <div class="box" helper="bloco2"></div>
-    <div class="form-group" helper="nome">
-      <label for="nome">Nome</label>
-      <input type="text" id="nome" />
-    </div>
-    <div class="form-group" helper="sobrenome">
-      <label for="sobrenome">Sobrenome</label>
-      <input type="text" id="sobrenome" />
-    </div>
-    <div class="form-group" helper="email">
-      <label for="email">E-mail</label>
-      <input type="email" id="email" />
-    </div>
 
-    <!-- Botão para iniciar o tour -->
-    <button id="startHelper">AJUDA</button>
-  </div>
+<div class="container">
+  <h1>Cadastro Completo de Funcionário</h1>
+  <form id="complexForm">
+    <!-- Informações Pessoais -->
+    <fieldset>
+      <legend>Informações Pessoais</legend>
+      <div class="form-group" data-helper="nome">
+        <label for="nome">Nome Completo:</label>
+        <input type="text" id="nome" placeholder="Digite seu nome completo">
+      </div>
+      <div class="form-group inline-group">
+        <div class="form-group" data-helper="cpf">
+          <label for="cpf">CPF:</label>
+          <input type="text" id="cpf" placeholder="Ex: 123.456.789-00">
+        </div>
+        <div class="form-group" data-helper="rg">
+          <label for="rg">RG:</label>
+          <input type="text" id="rg" placeholder="Ex: 12.345.678-9">
+        </div>
+      </div>
+      <div class="form-group inline-group">
+        <div class="form-group" data-helper="data_nascimento">
+          <label for="data_nascimento">Data de Nascimento:</label>
+          <input type="date" id="data_nascimento">
+        </div>
+        <div class="form-group" data-helper="sexo">
+          <label>Sexo:</label>
+          <input type="radio" id="masculino" name="sexo" value="M">
+          <label for="masculino">Masculino</label>
+          <input type="radio" id="feminino" name="sexo" value="F">
+          <label for="feminino">Feminino</label>
+        </div>
+      </div>
+      <div class="form-group" data-helper="nacionalidade">
+        <label for="nacionalidade">Nacionalidade:</label>
+        <select id="nacionalidade">
+          <option value="">Selecione...</option>
+          <option value="brasileira">Brasileira</option>
+          <option value="estrangeira">Estrangeira</option>
+        </select>
+      </div>
+      <div class="form-group" data-helper="email">
+        <label for="email">E-mail:</label>
+        <input type="email" id="email" placeholder="exemplo@dominio.com">
+      </div>
+      <div class="form-group" data-helper="telefone">
+        <label for="telefone">Telefone:</label>
+        <input type="tel" id="telefone" placeholder="(xx) xxxx-xxxx">
+      </div>
+    </fieldset>
+    
+    <!-- Endereço -->
+    <fieldset>
+      <legend>Endereço</legend>
+      <div class="form-group" data-helper="logradouro">
+        <label for="logradouro">Logradouro:</label>
+        <input type="text" id="logradouro" placeholder="Rua, Avenida, etc.">
+      </div>
+      <div class="form-group inline-group">
+        <div class="form-group" data-helper="numero">
+          <label for="numero">Número:</label>
+          <input type="text" id="numero" placeholder="Número">
+        </div>
+        <div class="form-group" data-helper="complemento">
+          <label for="complemento">Complemento:</label>
+          <input type="text" id="complemento" placeholder="Apto, Bloco, etc.">
+        </div>
+      </div>
+      <div class="form-group" data-helper="bairro">
+        <label for="bairro">Bairro:</label>
+        <input type="text" id="bairro" placeholder="Digite seu bairro">
+      </div>
+      <div class="form-group inline-group">
+        <div class="form-group" data-helper="cidade">
+          <label for="cidade">Cidade:</label>
+          <input type="text" id="cidade" placeholder="Digite sua cidade">
+        </div>
+        <div class="form-group" data-helper="estado">
+          <label for="estado">Estado:</label>
+          <select id="estado">
+            <option value="">Selecione...</option>
+            <option value="SP">São Paulo</option>
+            <option value="RJ">Rio de Janeiro</option>
+            <option value="MG">Minas Gerais</option>
+            <!-- Outros estados -->
+          </select>
+        </div>
+      </div>
+      <div class="form-group" data-helper="cep">
+        <label for="cep">CEP:</label>
+        <input type="text" id="cep" placeholder="Digite seu CEP">
+      </div>
+    </fieldset>
+    
+    <!-- Informações Profissionais -->
+    <fieldset>
+      <legend>Informações Profissionais</legend>
+      <div class="form-group" data-helper="cargo">
+        <label for="cargo">Cargo:</label>
+        <input type="text" id="cargo" placeholder="Digite seu cargo">
+      </div>
+      <div class="form-group" data-helper="departamento">
+        <label for="departamento">Departamento:</label>
+        <select id="departamento">
+          <option value="">Selecione...</option>
+          <option value="financeiro">Financeiro</option>
+          <option value="rh">Recursos Humanos</option>
+          <option value="ti">Tecnologia da Informação</option>
+          <option value="marketing">Marketing</option>
+        </select>
+      </div>
+      <div class="form-group inline-group">
+        <div class="form-group" data-helper="salario">
+          <label for="salario">Salário:</label>
+          <input type="number" id="salario" placeholder="Digite seu salário">
+        </div>
+        <div class="form-group" data-helper="data_admissao">
+          <label for="data_admissao">Data de Admissão:</label>
+          <input type="date" id="data_admissao">
+        </div>
+      </div>
+      <div class="form-group" data-helper="documento_trabalho">
+        <label for="documento_trabalho">CTPS (Documento de Trabalho):</label>
+        <input type="text" id="documento_trabalho" placeholder="Digite o número da CTPS">
+      </div>
+    </fieldset>
+    
+    <!-- Outras Informações -->
+    <fieldset>
+      <legend>Outras Informações</legend>
+      <div class="form-group" data-helper="website">
+        <label for="website">Website/Portfolio:</label>
+        <input type="url" id="website" placeholder="http://www.seusite.com">
+      </div>
+      <div class="form-group" data-helper="foto">
+        <label for="foto">Foto (Upload):</label>
+        <div class="file-input-container">
+          <button type="button">Escolher Arquivo</button>
+          <input type="file" id="foto">
+        </div>
+      </div>
+      <div class="form-group" data-helper="observacoes">
+        <label for="observacoes">Observações:</label>
+        <textarea id="observacoes" rows="5" placeholder="Insira observações adicionais"></textarea>
+      </div>
+    </fieldset>
+    
+    <button type="submit">Enviar Cadastro</button>
+  </form>
+</div>
 
-  <!-- Inclua os scripts JavaScript necessários -->
-  <script src="guiaMestre.js"></script> <!-- Presumivelmente, onde a classe EnhancedHelper está definida -->
-  <script src="index_helper.js"></script> <!-- Script que inicializa e configura o tour -->
+<!-- Botão fixo para iniciar o tour -->
+<button id="startHelper" style="position: fixed; bottom: 20px; right: 20px;">Iniciar Tour</button>
+
+<!-- Inclua a biblioteca EnhancedHelper (guiaMestre.js) -->
+<script src="guiaMestre.js"></script>
+
+  <script src="index_helper.js"></script>
 </body>
 </html>
